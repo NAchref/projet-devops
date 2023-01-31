@@ -12,7 +12,7 @@ services:
       - 3306:3306
 
   spring-boot:
-    image: achrefnefzaoui/ach:41
+    image: nefzaouiachref/ach:41
     container_name: devops
     ports:
       - 8089:8089
