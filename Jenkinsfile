@@ -1,5 +1,10 @@
 
 pipeline {
+    environment{
+    registry="nefzaouiachref/ach"
+    registryCredential='83ffc7a1-192e-4250-8139-f45ffdc2bf97'
+    dokerImage="devops"
+}
     agent any
     stages {
         stage('Cloning project in local VM') {
@@ -37,11 +42,33 @@ pipeline {
                 }
             }
         }
-        stage('deploy project to nexus') {
-            steps {
-                nexusArtifactUploader artifacts: [[artifactId: 'tpAchatProject', classifier: '', file: 'target/tpAchatProject-1.0.jar', type: 'jar']], credentialsId: '128156d6-f04d-4b21-acae-d6794b50ce9f', groupId: 'com.esprit.examen', nexusUrl: '192.168.56.14:8081/repository/maven-releases/', nexusVersion: 'nexus3', protocol: 'http', repository: 'nexusdeploymentrepo', version: '1.0'
-            }
+        stage("docker build") {
+                       steps{
+                         script {
+                            dockerImage = docker.build registry +":$BUILD_NUMBER"
+                       }
+                 }
+       }
+        
+        stage("docker push") {
+              steps{
+                 script {
+                 withDockerRegistry(credentialsId: registryCredential) {
+                  dockerImage.push()
+                  }
+                }
+           }
         }
+        stage('Cleaning up') {
+             steps{
+             sh "docker rmi $registry:$BUILD_NUMBER"
+        }
+    }
+    stage('running containers'){
+        steps{
+            sh 'docker-compose up -d'
+        }
+    }
         
     }    
 
