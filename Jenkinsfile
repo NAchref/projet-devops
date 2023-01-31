@@ -2,7 +2,7 @@
 pipeline {
     environment{
     registry="nefzaouiachref/ach"
-    registryCredential='83ffc7a1-192e-4250-8139-f45ffdc2bf97'
+    registryCredential='de1bd7ab-2df6-4e12-80c0-6bc3362420e5'
     dokerImage="devops"
 }
     agent any
